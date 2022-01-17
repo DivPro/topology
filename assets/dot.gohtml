@@ -1,0 +1,29 @@
+digraph {
+    {{range .Connectors -}}
+    {{ .ID }} [
+        shape=box3d,
+        style=filled,
+        fillcolor={{ if eq .Type "source" }}orange{{ else }}blue{{ end }},
+        label="{{ .Name }}"
+    ]
+    {{end}}
+
+    {{range .Topics -}}
+    {{ .ID }} [
+        label="{{ .Name }}\n\npartitions: {{ .PartitionCount }} | replication: {{ .ReplicationCount }}"
+    ]
+    {{end}}
+
+    {{range .Streams -}}
+    {{ .ID }} [
+        shape=box,
+        style=filled,
+        fillcolor={{ if .IsTable }}green{{ else }}yellow{{ end }},
+        label="{{ .Name }}\n\nk: {{ .KeyFormat }} | v: {{ .ValueFormat }}\n{{range .Fields -}}\n{{ .Name}} [{{ .Type }}]{{end}}"
+    ]
+    {{end}}
+
+    {{range .Connects -}}
+    {{ .From }} -> {{ .To }}
+    {{end}}
+}
