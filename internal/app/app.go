@@ -35,7 +35,7 @@ func Run(tplRaw string, conf Config) {
 	if err := g.RenderFilename(graph, graphviz.PNG, "graph.png"); err != nil {
 		log.Fatal(err)
 	}
-	if err := g.RenderFilename(graph, graphviz.SVG, "graph.swg"); err != nil {
+	if err := g.RenderFilename(graph, graphviz.SVG, "graph.svg"); err != nil {
 		log.Fatal(err)
 	}
 }
