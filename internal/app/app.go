@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"text/template"
 
+	"github.com/DivPro/topology/internal/connect"
+
 	"github.com/DivPro/topology/internal/ksql"
 	"github.com/DivPro/topology/internal/topology"
 	"github.com/goccy/go-graphviz"
@@ -13,10 +15,15 @@ import (
 
 func Run(tplRaw string, conf Config) {
 	t := topology.New(
-		ksql.NewKSQL(http.DefaultClient, ksql.Config{
+		ksql.New(http.DefaultClient, ksql.Config{
 			URL:      conf.KSQL.URL,
 			User:     conf.KSQL.User,
 			Password: conf.KSQL.Password,
+		}),
+		connect.New(http.DefaultClient, connect.Config{
+			URL:      conf.Connect.URL,
+			User:     conf.Connect.User,
+			Password: conf.Connect.Password,
 		}),
 		template.Must(template.New("tpl").Parse(tplRaw)),
 	)

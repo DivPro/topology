@@ -6,4 +6,9 @@ type Config struct {
 		User     string `yaml:"user"`
 		Password string `yaml:"password"`
 	} `yaml:"ksql"`
+	Connect struct {
+		URL      string `yaml:"url"`
+		User     string `yaml:"user"`
+		Password string `yaml:"password"`
+	} `yaml:"connect"`
 }

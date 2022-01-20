@@ -21,6 +21,7 @@ type ListConnectors struct {
 	Connectors    []ListConnectorItem `json:"connectors"`
 }
 
+// FetchConnectors not used - replaced with kafka connect REST api request (see connect/connectors.go)
 func (k *KSQL) FetchConnectors(ctx context.Context) ([]*models.Connector, error) {
 	respRaw, err := k.request(ctx, "LIST CONNECTORS;")
 	if err != nil {

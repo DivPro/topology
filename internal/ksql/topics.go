@@ -8,15 +8,13 @@ import (
 	"github.com/DivPro/topology/internal/models"
 )
 
-type ListTopicItem struct {
-	Name        string `json:"name"`
-	ReplicaInfo []int8 `json:"replicaInfo"`
-}
-
 type ListTopics struct {
-	Type          string          `json:"@type"`
-	StatementText string          `json:"statementText"`
-	Topics        []ListTopicItem `json:"topics"`
+	Type          string `json:"@type"`
+	StatementText string `json:"statementText"`
+	Topics        []struct {
+		Name        string `json:"name"`
+		ReplicaInfo []int8 `json:"replicaInfo"`
+	} `json:"topics"`
 }
 
 func (k *KSQL) FetchTopics(ctx context.Context) ([]*models.Topic, error) {

@@ -15,29 +15,24 @@ type ListStreamQuery struct {
 	Sinks []string `json:"sinks"`
 }
 
-type ListStreamFieldSchema struct {
-	Type string `json:"type"`
-}
-
-type ListStreamField struct {
-	Name   string                `json:"name"`
-	Schema ListStreamFieldSchema `json:"schema"`
-}
-
-type ListStreamItem struct {
-	Name         string            `json:"name"`
-	ReadQueries  []ListStreamQuery `json:"readQueries"`
-	WriteQueries []ListStreamQuery `json:"writeQueries"`
-	Fields       []ListStreamField `json:"fields"`
-	KeyFormat    string            `json:"keyFormat"`
-	ValueFormat  string            `json:"valueFormat"`
-	Topic        string            `json:"topic"`
-}
-
 type ListStream struct {
-	Type          string           `json:"@type"`
-	StatementText string           `json:"statementText"`
-	Streams       []ListStreamItem `json:"sourceDescriptions"`
+	Type          string `json:"@type"`
+	StatementText string `json:"statementText"`
+	Streams       []struct {
+		Name         string            `json:"name"`
+		ReadQueries  []ListStreamQuery `json:"readQueries"`
+		WriteQueries []ListStreamQuery `json:"writeQueries"`
+		Fields       []struct {
+			Name   string `json:"name"`
+			Schema struct {
+				Type string `json:"type"`
+			} `json:"schema"`
+		} `json:"fields"`
+		KeyFormat   string `json:"keyFormat"`
+		ValueFormat string `json:"valueFormat"`
+		Topic       string `json:"topic"`
+		Statistics  string `json:"statistics"`
+	} `json:"sourceDescriptions"`
 }
 
 func (k *KSQL) FetchStreamsAndTables(ctx context.Context) ([]*models.Stream, error) {
@@ -122,6 +117,7 @@ func (k *KSQL) fetchStreamOrTable(ctx context.Context, isTable bool) ([]*models.
 			ReadStreams:  rs,
 			WriteStreams: ws,
 			IsTable:      isTable,
+			//Statistics:   models.MustParseStreamStatistics(stream.Statistics, isTable),
 		}
 	}
 

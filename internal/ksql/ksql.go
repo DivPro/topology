@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -24,7 +25,7 @@ type KSQL struct {
 	config Config
 }
 
-func NewKSQL(client *http.Client, config Config) *KSQL {
+func New(client *http.Client, config Config) *KSQL {
 	if client == nil {
 		client = http.DefaultClient
 	}
@@ -50,5 +51,16 @@ func (k *KSQL) request(ctx context.Context, cmd string) (*http.Response, error) 
 	req.Header.Set("Accept", "application/vnd.ksql.v1+json")
 	req.SetBasicAuth(k.config.User, k.config.Password)
 
-	return k.client.Do(req)
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != 200 {
+		b, _ := ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
+
+		return nil, fmt.Errorf("invalid response status code [ %d ]: %s", resp.StatusCode, string(b))
+	}
+
+	return resp, nil
 }

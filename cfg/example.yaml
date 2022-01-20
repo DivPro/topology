@@ -2,3 +2,8 @@ KSQL:
   URL: "http://127.0.0.1:8088/ksql"
   User: ""
   Password: ""
+
+connect:
+  URL: "http://127.0.0.1:8083"
+  User: ""
+  Password: ""

@@ -7,14 +7,17 @@ import (
 	"log"
 	"text/template"
 
+	"github.com/DivPro/topology/internal/connect"
+
 	"github.com/DivPro/topology/internal/ksql"
 	"github.com/DivPro/topology/internal/models"
 )
 
 type Topology struct {
-	api    *ksql.KSQL
-	tpl    *template.Template
-	topics map[string]*models.Topic
+	ksqlAPI    *ksql.KSQL
+	connectAPI *connect.Connect
+	tpl        *template.Template
+	topics     map[string]*models.Topic
 	// name -> id
 	topicNames map[string]string
 	streams    map[string]*models.Stream
@@ -26,17 +29,19 @@ type Topology struct {
 }
 
 func New(
-	api *ksql.KSQL,
+	ksqlAPI *ksql.KSQL,
+	connectAPI *connect.Connect,
 	tpl *template.Template,
 ) *Topology {
 	return &Topology{
-		api: api,
-		tpl: tpl,
+		ksqlAPI:    ksqlAPI,
+		connectAPI: connectAPI,
+		tpl:        tpl,
 	}
 }
 
 func (t *Topology) Fetch(ctx context.Context) error {
-	topics, err := t.api.FetchTopics(ctx)
+	topics, err := t.ksqlAPI.FetchTopics(ctx)
 	if err != nil {
 		return fmt.Errorf("topology.fetch topics: %w", err)
 	}
@@ -47,7 +52,7 @@ func (t *Topology) Fetch(ctx context.Context) error {
 		t.topicNames[item.Name] = item.ID
 	}
 
-	streams, err := t.api.FetchStreamsAndTables(ctx)
+	streams, err := t.ksqlAPI.FetchStreamsAndTables(ctx)
 	if err != nil {
 		return fmt.Errorf("topology.fetch topics: %w", err)
 	}
@@ -58,9 +63,9 @@ func (t *Topology) Fetch(ctx context.Context) error {
 		t.streamNames[item.Name] = item.ID
 	}
 
-	connectors, err := t.api.FetchConnectors(ctx)
+	connectors, err := t.connectAPI.FetchConnectors(ctx)
 	if err != nil {
-		return fmt.Errorf("topology.fetch connectors: %w", err)
+		return fmt.Errorf("topology.fetch ksql connectors: %w", err)
 	}
 	t.connectors = make(map[string]*models.Connector, len(connectors))
 	t.connectorNames = make(map[string]string, len(connectors))
